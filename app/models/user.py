@@ -2,9 +2,9 @@ from app.utils import db
 import datetime
 
 
-class Rider(db.Model):
+class User(db.Model):
 	
-	__tablename__ = 'riders'
+	__tablename__ = 'users'
 	
 	id = db.Column(db.Integer, primary_key=True)
 	slack_uid = db.Column(db.String(50))
@@ -29,6 +29,6 @@ class Rider(db.Model):
 		db.session.commit()
 	
 	def __repr__(self):
-		return "<Rider: Full Name: {} - Slack ID: {} - Slack Name: {} and Phone Number: {}>".format(self.full_name, self.slack_uid, self.slack_name, self.phone_number)
+		return "<User: Full Name: {} - Slack ID: {} - Slack Name: {} and Phone Number: {}>".format(self.full_name, self.slack_uid, self.slack_name, self.phone_number)
 
 
