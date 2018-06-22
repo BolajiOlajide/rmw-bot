@@ -1,18 +1,18 @@
 from app.utils import db
-import datetime
+from datetime import datetime
 
 
 class User(db.Model):
 	
 	__tablename__ = 'users'
 	
-	id = db.Column(db.Integer, primary_key=True)
-	slack_uid = db.Column(db.String(50))
-	slack_name = db.Column(db.String(80))
-	full_name = db.Column(db.String(100))
+	id = db.Column(db.Integer(), primary_key=True)
+	slack_uid = db.Column(db.String(50), nullable=False)
+	slack_name = db.Column(db.String(80), nullable=False)
+	full_name = db.Column(db.String(100), nullable=False)
 	phone_number = db.Column(db.String(20))
-	created_at = db.Column(db.DateTime(), default=datetime.datetime.now())
-	updated_at = db.Column(db.DateTime(), onupdate=datetime.datetime.now())
+	created_at = db.Column(db.DateTime(), default=datetime.now())
+	updated_at = db.Column(db.DateTime(), default=datetime.now(), onupdate=datetime.now())
 	
 	def __init__(self, slack_uid, slack_name, full_name, phone_number):
 		self.slack_uid = slack_uid
