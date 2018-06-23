@@ -13,8 +13,11 @@ class Base(db.Model):
         db.DateTime(), default=datetime.now(), onupdate=datetime.now())
 
     def save(self):
-        db.session.add(self)
-        db.session.commit()
+        try:
+            db.session.add(self)
+            db.session.commit()
+        except (exc.IntegrityError, exc.InvalidRequestError):
+            db.session().rollback()
 
     def delete(self):
         db.session.delete(self)

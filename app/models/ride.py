@@ -1,7 +1,7 @@
 from .base import db, Base
 
 
-class Ride(Base, db.Model):
+class Rides(Base, db.Model):
 
     __tablename__ = 'rides'
 
@@ -12,6 +12,7 @@ class Ride(Base, db.Model):
     max_seats = db.Column(db.Integer(), nullable=False)
     seats_left = db.Column(db.Integer())
     status = db.Column(db.Integer())
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     def __init__(self, driver_id, origin, destination, take_off, max_seats=1, seats_left=1, status=1):
         self.driver_id = driver_id
