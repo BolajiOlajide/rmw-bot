@@ -1,7 +1,7 @@
 from .base import db, Base
 
 
-class Rides(Base, db.Model):
+class Ride(Base, db.Model):
 
     __tablename__ = 'rides'
 

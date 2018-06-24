@@ -1,7 +1,7 @@
 from .base import db, Base
 
 
-class Users(Base, db.Model):
+class User(Base, db.Model):
 
 	__tablename__ = 'users'
 	__table_args__ = (db.UniqueConstraint(
@@ -11,8 +11,6 @@ class Users(Base, db.Model):
 	slack_name = db.Column(db.String(80), nullable=False)
 	full_name = db.Column(db.String(100), nullable=False)
 	phone_number = db.Column(db.String(20))
-	rides = db.relationship('Rides', backref="users",
-                            cascade="all, delete-orphan", lazy='dynamic')
 
 	def __init__(self, slack_uid, slack_name, full_name, phone_number):
 		self.slack_uid = slack_uid

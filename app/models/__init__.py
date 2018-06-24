@@ -1,2 +1,2 @@
-from .user import Users
-from .ride import Rides
+from .user import User
+from .ride import Ride
