@@ -5,7 +5,7 @@ class User(Base, db.Model):
 
 	__tablename__ = 'users'
 	__table_args__ = (db.UniqueConstraint(
-        'slack_uid', 'slack_name', name='unique_constraint_user'),)
+		'slack_uid', 'slack_name', name='unique_constraint_user'),)
 
 	slack_uid = db.Column(db.String(50), nullable=False)
 	slack_name = db.Column(db.String(80), nullable=False)
