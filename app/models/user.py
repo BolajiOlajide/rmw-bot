@@ -11,6 +11,7 @@ class User(Base, db.Model):
 	slack_name = db.Column(db.String(80), nullable=False)
 	full_name = db.Column(db.String(100), nullable=False)
 	phone_number = db.Column(db.String(20))
+	ride = db.relationship("Ride")
 
 	def __init__(self, slack_uid, slack_name, full_name, phone_number):
 		self.slack_uid = slack_uid
