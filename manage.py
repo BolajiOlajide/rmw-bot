@@ -30,6 +30,12 @@ def bot():
 	if slack_response['ok'] is True:
 		slack_user_info = slack_response['user']['profile']
 		
+		if command_text[0] == 'add-ride':
+			response_body = {
+				'status': 'success',
+				'msg': bot_actions.add_ride()
+			}
+		
 		if command_text[0] == 'ride-info':
 			if len(command_text) > 1 and int(command_text[1]) > 0:
 				response_body = bot_actions.get_ride_info(command_text[1])
@@ -45,26 +51,6 @@ def bot():
 	response = jsonify(response_body)
 	response.status_code = 200
 	return response
-
-@app.route('/rides', methods=['POST'])
-def rides():
-    command_text = request.data.get('text')
-    command_text = command_text.split(' ')
-    slack_uid = request.data.get('user_id')
-    ride_action = BotActions()
-
-    if command_text[0] not in allowed_commands:
-        response_body = {'msg': 'Invalid Command Sent - `/rmw help` for available commands'}
-    
-    if command_text[0] in ['add-ride', 'add-rides']:
-        response_body = response_body = {
-            'status': 'success',
-            'msg': ride_action.add_ride()
-        }
-
-    response = jsonify(response_body)
-    response.status_code  = 200
-    return response
 
 if __name__ == '__main__':
 	manager.run()
