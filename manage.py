@@ -3,21 +3,17 @@ from flask import request, jsonify
 from flask_migrate import Migrate, MigrateCommand
 
 from app import create_app
-from app.utils import db
+from app.utils import db, allowed_commands, slackhelper
 from config import get_env
 
-from app.controllers.ride import Ride
+from app.actions.bot_actions import BotActions
+
 
 app = create_app(get_env('APP_ENV'))
 migrate = Migrate(app, db)
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)
 
-
-allowed_commands = [
-    'add-ride'
-    'add-rides'
-]
 
 @app.route('/', methods=['POST', 'GET'])
 def home():
@@ -34,7 +30,7 @@ def rides():
     command_text = request.data.get('text')
     command_text = command_text.split(' ')
     slack_uid = request.data.get('user_id')
-    ride_action = Ride()
+    ride_action = BotActions()
 
     if command_text[0] not in allowed_commands:
         response_body = {'msg': 'Invalid Command Sent - `/rmw help` for available commands'}
