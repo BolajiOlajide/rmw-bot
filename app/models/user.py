@@ -20,8 +20,8 @@ class User(Base, db.Model):
 		self.phone_number = phone_number
 
 	def __repr__(self):
-		return "<User: Full Name: {} - Slack ID: {} - \
+		return "User: Full Name: {} - Slack ID: {} - \
 				Slack Name: {} and \
-				Phone Number: {}>".format(
+				Phone Number: {}".format(
 										  self.full_name, self.slack_uid,
 										  self.slack_name, self.phone_number)

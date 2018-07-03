@@ -2,6 +2,7 @@ from datetime import datetime
 
 from app.utils import db
 
+
 # Define a base model for other database tables to inherit
 class Base(db.Model):
 
@@ -16,7 +17,7 @@ class Base(db.Model):
         try:
             db.session.add(self)
             db.session.commit()
-        except (exc.IntegrityError, exc.InvalidRequestError):
+        except (exec.IntegrityError, exec.InvalidRequestError):
             db.session().rollback()
 
     def delete(self):
