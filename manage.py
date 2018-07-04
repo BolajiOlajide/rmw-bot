@@ -20,6 +20,9 @@ def bot():
 	command_text = request.data.get('text').split(" ")
 	response_body = {'text': 'I do not understand that command. `/rmw help` for available commands'}
 	request_slack_id = request.data.get('user_id')
+
+	message_action_type = request.data.get('type')
+
 	bot_actions = BotActions()
 	
 	slack_response = slackhelper.user_info(request_slack_id)
@@ -31,10 +34,7 @@ def bot():
 		slack_user_info = slack_response['user']['profile']
 		
 		if command_text[0] == 'add-ride':
-			response_body = {
-				'status': 'success',
-				'msg': bot_actions.add_ride()
-			}
+			response_body = bot_actions.add_ride(slack_user_info, message_action_type)
 		
 		if command_text[0] == 'ride-info':
 			if len(command_text) > 1 and int(command_text[1]) > 0:
@@ -51,6 +51,7 @@ def bot():
 	response = jsonify(response_body)
 	response.status_code = 200
 	return response
+
 
 if __name__ == '__main__':
 	manager.run()
