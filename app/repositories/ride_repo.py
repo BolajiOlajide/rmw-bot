@@ -1,5 +1,6 @@
 from app.models.ride import Ride
 
+
 class RideRepo:
 	
 	@staticmethod
@@ -7,12 +8,18 @@ class RideRepo:
 		return Ride.query.filter_by(id=id).first()
 	
 	@staticmethod
-	def find_by_slackid(slack_id):
-		return Ride.query.filter_by(slack_uid=slack_id).first()
-	
-	@staticmethod
 	def all():
 		return Ride.query.all()
+	
+	@staticmethod
+	def increment_seats_left(ride):
+		ride.seats_left += 1
+		ride.save()
+
+	@staticmethod
+	def decrement_seats_left(ride):
+		ride.seats_left -= 1
+		ride.save()
 	
 	@staticmethod
 	def new_ride(driver_id, origin, destination, take_off, max_seats=1, seats_left=1, status=1):
