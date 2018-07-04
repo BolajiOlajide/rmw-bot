@@ -6,9 +6,9 @@ class BotActions:
 	
 	def __init__(self):
 		self.ride_repo = RideRepo()
-    
-    def add_ride():
-        return 'i am adding ride'
+
+	def add_ride():
+		return 'i am adding ride'
 	
 	def get_ride_info(self, id):
 		ride = self.ride_repo.find_by_id(id)
