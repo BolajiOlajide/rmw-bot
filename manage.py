@@ -42,6 +42,10 @@ def bot():
 		else:
 			response_body = {'text': 'Missing Required Parameter `ride id` '}
 
+		if len(command_text) == 1:
+			if command_text[0] == 'show-rides':
+				response_body = bot_actions.show_rides()
+
 	else:
 		response_body = {'text': 'Internal Application Error'}
 	

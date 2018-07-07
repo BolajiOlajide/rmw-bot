@@ -26,3 +26,7 @@ class RideRepo:
 		ride = Ride(driver_id, origin, destination, take_off, max_seats, seats_left, status)
 		ride.save()
 		return ride
+
+	@staticmethod
+	def get_todays_rides(start=None, end=None):
+		return Ride.query.filter(Ride.take_off <= end, Ride.take_off >= start).all()
