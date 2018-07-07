@@ -1,6 +1,7 @@
 from app.repositories.ride_repo import RideRepo
 from app.repositories.ride_rider_repo import RideRiderRepo
 from app.utils import timestamp_to_epoch
+from datetime import datetime
 
 
 class BotActions:
@@ -48,5 +49,26 @@ class BotActions:
 				self.ride_rider_repo.new_ride_rider(ride_id=ride.id, rider_id=self.current_user.id)
 				self.ride_repo.decrement_seats_left(ride)
 				return {'text': 'Successfully Joined Ride'}
+
+	def show_rides(self):
+		todays_date = datetime.now()
+		start = datetime(todays_date.year, todays_date.month, todays_date.day, 0, 0)
+		end = datetime(todays_date.year, todays_date.month, todays_date.day, 23, 59)
+		rides = RideRepo.get_todays_rides(start=start, end=end)
+
+		text = ''
+
+		for ride in rides:
+			text += str('```Ride Id: {} \n'
+				'Driver name: {} \n'
+				'Driver number: {} \n'
+				'space available: {} \n'
+				'pick up point: {} \n'
+				'destination: {}```\n').format(ride.id, ride.driver.full_name, ride.driver.phone_number, 
+			ride.seats_left, ride.origin, ride.destination)
+
+		return { 
+			'text': text,
+		}
 					
 
