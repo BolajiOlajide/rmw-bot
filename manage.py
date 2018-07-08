@@ -28,9 +28,8 @@ def bot():
 
 	if command_text[0] not in allowed_commands:
 		response_body = {'text': 'Invalid Command'}
-
-	if slack_response['ok'] is True:
-		slack_user_info = slack_response['user']['profile']
+	elif slack_response['ok'] is True:
+		# slack_user_info = slack_response['user']['profile']
 
 		# These Commands Require A Ride ID
 		if len(command_text) > 1 and int(command_text[1]) > 0:
