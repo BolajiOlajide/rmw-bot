@@ -62,14 +62,19 @@ class BotActions:
 			for ride in rides:
 				# format the take_of_time string
 				take_off_time = '<!date^{epoch}^{date} at {time}|{fallback}>'.format(epoch=timestamp_to_epoch(ride.take_off), date='{date_short_pretty}', time='{time}', fallback=ride.take_off)
+				if ride.status == 0:
+					ride_status = 'EXPIRED'
+				else:
+					ride_status = 'ACTIVE'
 				text += str('```Ride Id: {} \n'
 					'Driver name: {} <@{}> \n'
 					'Driver number: {} \n'
 					'Space available: {} \n'
 					'Pick up point: {} \n'
 					'Destination: {} \n'
-					'Take off: {} \n```\n').format(ride.id, ride.driver.full_name, ride.driver.slack_uid, ride.driver.phone_number, 
-				ride.seats_left, ride.origin, ride.destination, take_off_time)
+					'Take off: {} \n'
+					'Status: {}```\n').format(ride.id, ride.driver.full_name, ride.driver.slack_uid, ride.driver.phone_number, 
+				ride.seats_left, ride.origin, ride.destination, take_off_time, ride_status)
 		else:
 			text = ':disappointed: No rides available for now, please check back later in the day'
 
