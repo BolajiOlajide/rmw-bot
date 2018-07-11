@@ -1,5 +1,7 @@
 # Ride My Way Bot
 
+[ ![Codeship Status for BolajiOlajide/rmw-bot](https://app.codeship.com/projects/2cb88090-604d-0136-6722-766075984356/status?branch=develop)](https://app.codeship.com/projects/296252)
+
 This repository contains the source code for the ride-my-way slack application that can be used to hook drivers and riders heading to the same destination together.
 
 ### Installation
