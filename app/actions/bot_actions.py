@@ -1,6 +1,7 @@
 from app.repositories.ride_repo import RideRepo
 from app.repositories.ride_rider_repo import RideRiderRepo
 from app.utils import timestamp_to_epoch
+from datetime import datetime
 
 
 class BotActions:
@@ -48,5 +49,37 @@ class BotActions:
 				self.ride_rider_repo.new_ride_rider(ride_id=ride.id, rider_id=self.current_user.id)
 				self.ride_repo.decrement_seats_left(ride)
 				return {'text': 'Successfully Joined Ride'}
+
+	def show_rides(self):
+		todays_date = datetime.now()
+		start = datetime(todays_date.year, todays_date.month, todays_date.day, 0, 0)
+		end = datetime(todays_date.year, todays_date.month, todays_date.day, 23, 59)
+		rides = RideRepo.get_todays_rides(start=start, end=end)
+
+		text = ''
+
+		if len(rides) > 0:
+			for ride in rides:
+				# format the take_of_time string
+				take_off_time = '<!date^{epoch}^{date} at {time}|{fallback}>'.format(epoch=timestamp_to_epoch(ride.take_off), date='{date_short_pretty}', time='{time}', fallback=ride.take_off)
+				if ride.status == 0:
+					ride_status = 'EXPIRED'
+				else:
+					ride_status = 'ACTIVE'
+				text += str('```Ride Id: {} \n'
+					'Driver name: {} <@{}> \n'
+					'Driver number: {} \n'
+					'Space available: {} \n'
+					'Pick up point: {} \n'
+					'Destination: {} \n'
+					'Take off: {} \n'
+					'Status: {}```\n').format(ride.id, ride.driver.full_name, ride.driver.slack_uid, ride.driver.phone_number, 
+				ride.seats_left, ride.origin, ride.destination, take_off_time, ride_status)
+		else:
+			text = ':disappointed: No rides available for now, please check back later in the day'
+
+		return {
+			'text': text,
+		}
 					
 

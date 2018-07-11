@@ -28,9 +28,8 @@ def bot():
 
 	if command_text[0] not in allowed_commands:
 		response_body = {'text': 'Invalid Command'}
-
-	if slack_response['ok'] is True:
-		slack_user_info = slack_response['user']['profile']
+	elif slack_response['ok'] is True:
+		# slack_user_info = slack_response['user']['profile']
 
 		# These Commands Require A Ride ID
 		if len(command_text) > 1 and int(command_text[1]) > 0:
@@ -41,6 +40,10 @@ def bot():
 				response_body = bot_actions.join_ride(command_text[1])
 		else:
 			response_body = {'text': 'Missing Required Parameter `ride id` '}
+
+		if len(command_text) == 1:
+			if command_text[0] == 'show-rides':
+				response_body = bot_actions.show_rides()
 
 	else:
 		response_body = {'text': 'Internal Application Error'}
