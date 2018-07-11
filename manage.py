@@ -14,6 +14,12 @@ migrate = Migrate(app, db)
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)
 
+@app.route('/', methods=['GET','POST'])
+def home():
+	response = jsonify({'YOU': 'Are Awesome!'})
+	response.status_code = 200
+	return response
+
 
 @app.route('/bot', methods=['POST', 'GET'])
 def bot():
