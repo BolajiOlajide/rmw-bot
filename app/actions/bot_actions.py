@@ -1,5 +1,7 @@
 from app.repositories.ride_repo import RideRepo
 from app.repositories.ride_rider_repo import RideRiderRepo
+from app.repositories.user_repo import UserRepo
+from app.utils.slackhelper import SlackHelper
 from app.utils import timestamp_to_epoch
 from datetime import datetime
 
@@ -8,6 +10,8 @@ class BotActions:
 	
 	def __init__(self, current_user=None):
 		self.ride_repo = RideRepo()
+		self.user_repo = UserRepo()
+		self.slack_helper = SlackHelper()
 		self.ride_rider_repo = RideRiderRepo()
 		if current_user is not None:
 			self.current_user = current_user
@@ -24,6 +28,8 @@ class BotActions:
 			takeoff_time = '<!date^{epoch}^{date} at {time}|{fallback}>'.format(epoch=timestamp_to_epoch(ride.take_off), date='{date_short_pretty}', time='{time}', fallback=ride.take_off)
 			if ride.status == 0:
 				ride_status = 'EXPIRED'
+			elif ride.status == 2:
+				ride_status = 'CANCELLED'
 			else:
 				ride_status = 'ACTIVE'
 			
@@ -64,6 +70,8 @@ class BotActions:
 				take_off_time = '<!date^{epoch}^{date} at {time}|{fallback}>'.format(epoch=timestamp_to_epoch(ride.take_off), date='{date_short_pretty}', time='{time}', fallback=ride.take_off)
 				if ride.status == 0:
 					ride_status = 'EXPIRED'
+				elif ride.status == 2:
+					ride_status == 'CANCELLED'
 				else:
 					ride_status = 'ACTIVE'
 				text += str('```Ride Id: {} \n'
@@ -81,5 +89,23 @@ class BotActions:
 		return {
 			'text': text,
 		}
-					
+
+	def cancel_ride(self, id):
+		ride = self.ride_repo.find_by_id(id)
+		if self.current_user.id != ride.driver_id:
+			return {'text': 'You are not authorized to cancel this ride'}
+
+		if not ride:
+			return {'text': 'Ride Does Not Exist'}
+		if ride.status == 0 or ride.status == 2:
+			return { 'text': 'This Ride is currently expired or cancelled'}
+		ride_riders = self.ride_rider_repo.ride_rider_list(ride.id)
+		text = 'The ride from {} to {} ' \
+			   'has been cancelled. Please check back for another ride to your destination' \
+			   ' :disappointed:'.format(ride.origin, ride.destination)
+		ride.status = 2
+		ride.save()
+		for ride_rider in ride_riders:
+			rider = self.user_repo.find_by_id(ride_rider.rider_id)
+			return self.slack_helper.post_message(text, rider.slack_uid)
 

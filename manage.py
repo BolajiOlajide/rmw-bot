@@ -21,14 +21,14 @@ def home():
 	return response
 
 
-@app.route('/bot', methods=['POST', 'GET'])
+@app.route('/bot', methods=['POST', 'GET', 'PATCH'])
 def bot():
 	command_text = request.data.get('text').split(" ")
 	response_body = {'text': 'I do not understand that command. `/rmw help` for available commands'}
 	request_slack_id = request.data.get('user_id')
 	
 	slack_response = slackhelper.user_info(request_slack_id)
-	
+
 	current_user = UserRepo.find_by_slackid(request_slack_id)
 	bot_actions = BotActions(current_user=current_user)
 
@@ -44,6 +44,9 @@ def bot():
 
 			if command_text[0] == 'join-ride':
 				response_body = bot_actions.join_ride(command_text[1])
+
+			if command_text[0] == 'cancel-ride':
+				response_body = bot_actions.cancel_ride(command_text[1])
 		else:
 			response_body = {'text': 'Missing Required Parameter `ride id` '}
 
