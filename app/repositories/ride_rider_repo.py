@@ -25,7 +25,11 @@ class RideRiderRepo:
 			return True
 		else:
 			return False
-	
+			
+	@staticmethod
+	def ride_rider_list(ride_id):
+		return RideRider.query.filter_by(ride_id=ride_id).all()
+
 	@staticmethod
 	def all():
 		return RideRider.query.all()
