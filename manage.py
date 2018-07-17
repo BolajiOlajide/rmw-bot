@@ -46,7 +46,8 @@ element = [
 	}
 ]
 
-@app.route('/', methods=['GET','POST'])
+
+@app.route('/', methods=['GET', 'POST'])
 def home():
 	response = jsonify({'YOU': 'Are Awesome!'})
 	response.status_code = 200
@@ -59,7 +60,7 @@ def bot():
 	response_body = {'text': 'I do not understand that command. `/rmw help` for available commands'}
 	request_slack_id = request.data.get('user_id')
 	message_trigger = request.data.get('trigger_id')
-	
+
 	slack_response = slackhelper.user_info(request_slack_id)
 
 	current_user = UserRepo.find_by_slackid(request_slack_id)
@@ -67,11 +68,9 @@ def bot():
 
 	if command_text[0] not in allowed_commands:
 		response_body = {'text': 'Invalid Command'}
+
 	elif slack_response['ok'] is True:
 		# slack_user_info = slack_response['user']['profile']
-
-	if slack_response['ok'] is True:
-		slack_user_info = slack_response['user']['profile']
 
 		if command_text[0] == 'add-ride':
 			dialog = {
@@ -85,7 +84,7 @@ def bot():
 			msg = ':pencil: We are saving your ride...'
 			response_body = {'text': msg}
 		# These Commands Require A Ride ID
-		else if len(command_text) > 1 and int(command_text[1]) > 0:
+		elif len(command_text) > 1 and int(command_text[1]) > 0:
 			if command_text[0] == 'ride-info':
 				response_body = bot_actions.get_ride_info(command_text[1])
 
@@ -103,7 +102,7 @@ def bot():
 
 	else:
 		response_body = {'text': 'Internal Application Error'}
-	
+
 	response = jsonify(response_body)
 	response.status_code = 200
 	return response

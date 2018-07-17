@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from app.utils.slackhelper import SlackHelper
-import time, datetime
+import time
+from datetime import datetime
 from calendar import timegm
 
 db = SQLAlchemy()
@@ -21,25 +22,27 @@ def timestamp_to_epoch(timestamp):
 	utc_time = time.strptime(timestamp.strftime("%Y-%m-%dT%H:%M:%S.%fZ"), "%Y-%m-%dT%H:%M:%S.%fZ")
 	return timegm(utc_time)
 
+
 def convert_time_to_timestamp(time_string):
-	currenttime = datetime.datetime.now().time().strftime("%H:%M")
+	currenttime = datetime.now().time().strftime("%H:%M")
 	if currenttime >= "10:00" and currenttime <= "13:00":
-		if m2 >= "10:00" and m2 >= "12:00":
-			m2 = ("""%s%s""" % (m2, " AM"))
+		if time_string >= "10:00" and time_string >= "12:00":
+			time_string = ("%s%s" % (time_string, " AM"))
 		else:
-			m2 = ("""%s%s""" % (m2, " PM"))
+			time_string = ("%s%s" % (time_string, " PM"))
 	else:
-		m2 = ("""%s%s""" % (m2, " PM"))
-	# m2 = datetime.datetime.strptime(m2, '%I:%M %p')
-	# m2 = m2.strftime("%H:%M %p")
+		time_string = ("%s%s" % (time_string, " PM"))
+	time_string = datetime.strptime(time_string, '%I:%M %p')
+	time_string = time_string.strftime("%H:%M %p")
 	# m2 = m2[:-3]
-	m2 = time.mktime(datetime.datetime.strptime(m2, '%I:%M %p').timetuple())
-	# new_time = time.mktime(datetime.datetime.strptime(s, "%H:%M").timetuple())
-	return m2
+	# time_string = time.mktime(datetime.strptime(time_string, '%I:%M %p'))
+	# new_time = time.mktime(datetime.datetime.strptime(time_string, "%H:%M").timetuple())
+	return time_string
+
 
 def check_ride_status(ride):
 	if ride.status == 0:
-		 ride_status = 'INACTIVE'
+		ride_status = 'INACTIVE'
 	elif ride.status == 1:
 		ride_status = 'ACTIVE'
 	return ride_status
