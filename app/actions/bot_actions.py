@@ -6,28 +6,19 @@ class BotActions:
 	
 	def __init__(self):
 		self.ride_repo = RideRepo()
-		self.ride_details = {}
 
-	def add_ride(self, driver_id, message_action_type):
-		# get driver_id
-		# generate callback_id = driver_id + 'add_ride'
+	def add_ride(self, driver_id, origin, destination, take_off, max_seats):
+		print('---i am ride repo action driver_id', driver_id)
+		print("===>origin add===>", origin)
+		print("===>destination add===>", destination)
+		print("===>take_off add===>", take_off)
+		print("===>max_seats add===>", int(max_seats))
+		# new_ride = self.ride_repo.new_ride(driver_id=driver_id, origin=origin, destination=destination, take_off=take_off, max_seats=int(max_seats), seats_left=int(max_seats), status=1)
+		# print('==>new ride saved in db:==>', new_ride)
+		# msg = {"text": ":white_check_mark: Ride {ride_id} saved! Thanks for sharing.".format(ride_id=new_ride.driver_id)}
+		msg = {"text": ":white_check_mark: Ride saved! Thanks for sharing."}
 
-		# if message_action_type == "interactive_message":
-			# start dialogue
-			# request for origin
-			# on completion, request for destination
-			# on completion, request for take_off [takeoff-time]
-			# on completion, request for max_seats [space-available]
-			# on completion, update for seats_left, with max_seats value then update status to 1
-			# store in self.ride_detail hash
-
-		# elif message_action_type == "dialog_submission":
-			# new_ride = self.ride_repo.new_ride(self.ride_details.driver_id, self.ride_details.origin, self.ride_details.destination, self.ride_details.take_off, self.ride_details.max_seats, self.ride_details.max_seats, status)
-		# return new_ride
-
-		return {
-			'text': 'New Ride Created Successfully - {}'.format(driver_id)
-		}
+		return msg
 	
 	def get_ride_info(self, id):
 		ride = self.ride_repo.find_by_id(id)

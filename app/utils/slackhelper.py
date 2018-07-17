@@ -17,6 +17,16 @@ class SlackHelper:
 			as_user=True
 		)
 
+	def update_message(self, msg, recipient, message_ts=None, attachments=None):
+		return self.slack_client.api_call(
+			"chat.update",
+			channel=recipient,
+			ts=message_ts,
+			text=msg,
+			attachments=attachments,
+			as_user=True
+		)
+
 	def file_upload(self, file_content, file_name, file_type, title=None, ):
 		return self.slack_client.api_call(
 			"files.upload",
@@ -35,9 +45,9 @@ class SlackHelper:
 			token=self.slack_token
 		)
 
-	def dialog(self, trigger_id, dialog_json):
+	def dialog(self, dialog, trigger_id):
 		return self.slack_client.api_call(
 			"dialog.open",
-			trigger_id="",
-			dialog=dialog_json
+			trigger_id=trigger_id,
+			dialog=dialog
 		)
