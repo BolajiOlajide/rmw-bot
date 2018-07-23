@@ -113,12 +113,15 @@ def interactive():
 	request_payload = json.loads(request.data.get('payload'))
 	webhook_url = request_payload["response_url"]
 
-	bot_actions = BotActions()
+	slack_user_info = slackhelper.user_info(request_payload['user']['id'])
+	user_data = slack_user_info['user']
+
+	current_user = UserRepo.find_or_create(by='slack_uid', value=request_payload["user"]["id"], user_data=user_data)
+
+	bot_actions = BotActions(current_user=current_user)
 
 	if request_payload["type"] == "dialog_submission":
-		# slack_data = {'text': ":white_check_mark: Ride saved! Thanks for sharing."}
 		slack_data = bot_actions.add_ride(
-			driver_id=request_payload["user"]["id"],
 			origin=request_payload["submission"]["origin"],
 			destination=request_payload["submission"]["destination"],
 			take_off=request_payload["submission"]["take_off"],

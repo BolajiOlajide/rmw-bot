@@ -16,22 +16,23 @@ class BotActions:
 		if current_user is not None:
 			self.current_user = current_user
 
-	def add_ride(self, driver_id, origin, destination, take_off, max_seats):
-		print('---i am ride repo action driver_id', driver_id)
-		print("===>origin add===>", origin)
-		print("===>destination add===>", destination)
-		print("===>max_seats add===>", int(max_seats))
-		print("===>take_off add===>", convert_time_to_timestamp(take_off))
-		new_ride_data = self.ride_repo.new_ride(driver_id=driver_id, origin=origin, destination=destination,
+	def add_ride(self, origin, destination, take_off, max_seats):
+
+		if take_off.find(':') < 1:
+			# Raise Error
+			msg = {"text": "Error Occurred, Your Time Format is not valid, missing colon. Format: 11:59 or 18:10"}
+			return msg
+
+		new_ride_data = self.ride_repo.new_ride(driver_id=self.current_user.id, origin=origin, destination=destination,
 												take_off=convert_time_to_timestamp(take_off), max_seats=int(max_seats),
 												seats_left=int(max_seats), status=1)
-		print('==>new ride saved in db:==>', new_ride_data)
-		if not new_ride_data:
-			msg = {"text": "Error occured saving Ride! Please try again."}
+
+		if new_ride_data:
+			msg = {"text": ":white_check_mark: Ride to {destination}, from {origin}, by {take_off} saved! Thanks for sharing {max_seats} spaces."}.format(
+				destination=new_ride_data, origin=new_ride_data.origin, take_off=new_ride_data.take_off, max_seats=new_ride_data.max_seats)
 			return msg
 		else:
-			# msg = {"text": ":white_check_mark: Ride {ride_id} saved! Thanks for sharing.".format(ride_id=new_ride.driver_id)}
-			msg = {"text": ":white_check_mark: Ride saved! Thanks for sharing."}
+			msg = {"text": "Error occurred saving Ride! Please try again."}
 			return msg
 
 	def get_ride_info(self, id):
