@@ -24,20 +24,11 @@ def timestamp_to_epoch(timestamp):
 
 
 def convert_time_to_timestamp(time_string):
-	currenttime = datetime.now().time().strftime("%H:%M")
-	if currenttime >= "10:00" and currenttime <= "13:00":
-		if time_string >= "10:00" and time_string >= "12:00":
-			time_string = ("%s%s" % (time_string, " AM"))
-		else:
-			time_string = ("%s%s" % (time_string, " PM"))
-	else:
-		time_string = ("%s%s" % (time_string, " PM"))
-	time_string = datetime.strptime(time_string, '%I:%M %p')
-	time_string = time_string.strftime("%H:%M %p")
-	# m2 = m2[:-3]
-	# time_string = time.mktime(datetime.strptime(time_string, '%I:%M %p'))
-	# new_time = time.mktime(datetime.datetime.strptime(time_string, "%H:%M").timetuple())
-	return time_string
+	today = datetime.today()
+	time_string = time_string.split(':')
+	time_string[1] = '59' if int(time_string[1]) > 59 else time_string[1]
+	full_time_string = '{} {}, {} {}:{}'.format(today.day, today.month, today.year, time_string[0], time_string[1])
+	return datetime.strptime(full_time_string, '%d %m, %Y %H:%M')
 
 
 def check_ride_status(ride):
