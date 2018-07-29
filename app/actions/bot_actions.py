@@ -48,7 +48,7 @@ class BotActions:
 		take_off_time = convert_time_to_timestamp(take_off)
 
 		if self.ride_repo.is_ride_exist(self.current_user.id, origin, destination, take_off_time):
-			msg = {"text": "Error occurred! Ride With Provided Details Already Exist. - `/rmw show-rides` to get all rides."}
+			msg = {"text": ":no_entry_sign: Error occurred! Ride With Provided Details Already Exist. - `/rmw show-rides` to get all rides."}
 			return msg
 
 		new_ride_data = self.ride_repo.new_ride(driver_id=self.current_user.id, origin=origin, destination=destination,
@@ -60,7 +60,7 @@ class BotActions:
 				destination=new_ride_data.destination, origin=new_ride_data.origin, take_off=new_ride_data.take_off, max_seats=new_ride_data.max_seats)}
 			return msg
 		else:
-			msg = {"text": "Error occurred saving Ride! Please try again."}
+			msg = {"text": ":no_entry_sign: Error occurred saving Ride! Please try again."}
 			return msg
 
 	def get_ride_info(self, id):
