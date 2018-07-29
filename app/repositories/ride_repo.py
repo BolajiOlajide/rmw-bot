@@ -20,7 +20,12 @@ class RideRepo:
 	def decrement_seats_left(ride):
 		ride.seats_left -= 1
 		ride.save()
-	
+
+	@staticmethod
+	def is_ride_exist(driver_id, origin, destination, take_off):
+		ride_detail = Ride.query.filter_by(driver_id=driver_id, origin=origin, destination=destination, take_off=take_off).first()
+		return True if ride_detail else False
+
 	@staticmethod
 	def new_ride(driver_id, origin, destination, take_off, max_seats=1, seats_left=1, status=1):
 		ride = Ride(driver_id, origin, destination, take_off, max_seats, seats_left, status)

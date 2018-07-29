@@ -35,14 +35,15 @@ element = [
 		"type": "text",
 		"name": "take_off",
 		"placeholder": "Time of Departure",
-		"hint": "Enter the time you will take in this formats - {8:00}, {20:00}"
+		"hint": "Enter the time you will take in this formats - {08:00}, {20:00}"
 	},
 	{
 		"label": "Number of Riders needed",
 		"type": "text",
 		"name": "max_seats",
-		"placeholder": "Number of of spaces available",
-		"hint": "Add the number of spaces available on your ride e.g. 2 seats"
+		"subtype": "number",
+		"placeholder": "Number of spaces available",
+		"hint": "Add the number of spaces available on your ride e.g. 2"
 	}
 ]
 
@@ -70,19 +71,21 @@ def bot():
 		response_body = {'text': 'Invalid Command'}
 
 	elif slack_response['ok'] is True:
-		# slack_user_info = slack_response['user']['profile']
+		if len(command_text) == 1:
+			if command_text[0] == 'show-rides':
+				response_body = bot_actions.show_rides()
 
-		if command_text[0] == 'add-ride':
-			dialog = {
-				"title": "Add A Ride",
-				"submit_label": "Add",
-				"callback_id": slack_response['user']['id'] + "_add_ride",
-				"notify_on_cancel": True,
-				"elements": element
-			}
-			slackhelper.dialog(dialog, message_trigger)
-			msg = ':pencil: We are saving your ride...'
-			response_body = {'text': msg}
+			if command_text[0] == 'add-ride':
+				dialog = {
+					"title": "Add A Ride",
+					"submit_label": "Add",
+					"callback_id": slack_response['user']['id'] + "_add_ride",
+					"notify_on_cancel": True,
+					"elements": element
+				}
+				slackhelper.dialog(dialog, message_trigger)
+				msg = ':pencil: We are saving your ride...'
+				response_body = {'text': msg}
 		# These Commands Require A Ride ID
 		elif len(command_text) > 1 and int(command_text[1]) > 0:
 			if command_text[0] == 'ride-info':
@@ -96,9 +99,6 @@ def bot():
 		else:
 			response_body = {'text': 'Missing Required Parameter `ride id` '}
 
-		if len(command_text) == 1:
-			if command_text[0] == 'show-rides':
-				response_body = bot_actions.show_rides()
 
 	else:
 		response_body = {'text': 'Internal Application Error'}
@@ -126,16 +126,22 @@ def interactive():
 			destination=request_payload["submission"]["destination"],
 			take_off=request_payload["submission"]["take_off"],
 			max_seats=request_payload["submission"]["max_seats"])
-		print('slack data==>', slack_data)
+
 		response = requests.post(
 			webhook_url, data=json.dumps(slack_data),
 			headers={'Content-Type': 'application/json'}
 		)
+
 		if response.status_code != 200:
-			raise ValueError(
-				'Request to slack returned an error %s, the response is:\n%s'
-				% (response.status_code, response.text)
-			)
+			if slack_data["errors"]:
+				response = jsonify(slack_data)
+				response.status_code = 200
+				return response
+			else:
+				raise ValueError(
+					'Request to slack returned an error %s, the response is:\n%s'
+					% (response.status_code, response.text)
+				)
 
 	elif request_payload["type"] == "dialog_cancellation":
 		slack_data = {'text': "We hope you change your mind and share a ride"}
@@ -149,7 +155,7 @@ def interactive():
 				% (response.status_code, response.text)
 			)
 
-	return ""
+	return "", 200
 
 
 if __name__ == '__main__':

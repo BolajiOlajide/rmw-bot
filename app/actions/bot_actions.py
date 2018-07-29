@@ -19,17 +19,45 @@ class BotActions:
 	def add_ride(self, origin, destination, take_off, max_seats):
 
 		if take_off.find(':') < 1:
-			# Raise Error
-			msg = {"text": "Error Occurred, Your Time Format is not valid, missing colon. Format: 11:59 or 18:10"}
+			msg = {
+				"errors": [
+					{
+						"name": "take_off",
+						"error": "Your Time Format is invalid, missing colon. Formats: 08:00 or 18:59"
+					}
+				]
+			}
+			return msg
+
+		try:
+			max_seats = int(max_seats)
+		except ValueError:
+			max_seats = None
+
+		if not isinstance(max_seats, int):
+			msg = {
+				"errors": [
+					{
+						"name": "max_seats",
+						"error": "Number of Riders must be Integer"
+					}
+				]
+			}
+			return msg
+
+		take_off_time = convert_time_to_timestamp(take_off)
+
+		if self.ride_repo.is_ride_exist(self.current_user.id, origin, destination, take_off_time):
+			msg = {"text": "Error occurred! Ride With Provided Details Already Exist. - `/rmw show-rides` to get all rides."}
 			return msg
 
 		new_ride_data = self.ride_repo.new_ride(driver_id=self.current_user.id, origin=origin, destination=destination,
-												take_off=convert_time_to_timestamp(take_off), max_seats=int(max_seats),
-												seats_left=int(max_seats), status=1)
+												take_off=take_off_time, max_seats=max_seats,
+												seats_left=max_seats, status=1)
 
 		if new_ride_data:
-			msg = {"text": ":white_check_mark: Ride to {destination}, from {origin}, by {take_off} saved! Thanks for sharing {max_seats} spaces."}.format(
-				destination=new_ride_data, origin=new_ride_data.origin, take_off=new_ride_data.take_off, max_seats=new_ride_data.max_seats)
+			msg = {"text": ":white_check_mark: Ride to {destination}, from {origin}, by {take_off} saved! Thanks for sharing {max_seats} spaces.".format(
+				destination=new_ride_data.destination, origin=new_ride_data.origin, take_off=new_ride_data.take_off, max_seats=new_ride_data.max_seats)}
 			return msg
 		else:
 			msg = {"text": "Error occurred saving Ride! Please try again."}
