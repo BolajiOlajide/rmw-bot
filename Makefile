@@ -19,4 +19,4 @@ start:
 	gunicorn -w 6 -b 0.0.0.0 manage:app
 
 install:
-	pip intall -r requirements.txt
+	pip install -r requirements.txt
