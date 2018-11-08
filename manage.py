@@ -1,5 +1,5 @@
 from flask_script import Manager
-from flask import jsonify, request, make_response
+from flask import jsonify, request
 from flask_migrate import Migrate, MigrateCommand
 import requests
 import json
@@ -70,12 +70,12 @@ def bot():
 	if command_text[0] not in allowed_commands:
 		response_body = {'text': 'Invalid Command'}
 
-	elif slack_response['ok'] is True:
+	elif slack_response['ok']:
 		if len(command_text) == 1:
 			if command_text[0] == 'show-rides':
 				response_body = bot_actions.show_rides()
 
-			if command_text[0] == 'add-ride':
+			elif command_text[0] == 'add-ride':
 				dialog = {
 					"title": "Add A Ride",
 					"submit_label": "Add",
@@ -86,6 +86,27 @@ def bot():
 				slackhelper.dialog(dialog, message_trigger)
 				msg = ':pencil: We are saving your ride...'
 				response_body = {'text': msg}
+
+			else:
+				msg = """The following commands are available on the RideMyWay platform
+
+	:heavy_plus_sign: Add a ride `/rmw add-ride` This is used to add a ride to the system.
+	This option is only available to drivers.
+
+	:bow_and_arrow:  Show Rides `/rmw show-rides` This is used to view all recent rides in the system.
+
+	:information_source: Get Ride Info `/rmw ride-info <ride_id>` Get details of a ride
+
+	:juggling: Join a Ride - `/rmw join-ride <ride_id>` Join a ride using the ride ID
+
+	:walking: Leave a ride - `/rmw leave-ride <ride_id>` Join a ride using the ride ID
+
+	:mailbox_closed:  Cancel a ride - `/rmw cancel-ride <ride_id>` Cancel a ride using the ride ID
+
+	:speaking_head_in_silhouette: Help - `/rmw help` Display RMW help menu
+				"""
+				response_body = {'text': msg}
+
 		# These Commands Require A Ride ID
 		elif len(command_text) > 1 and int(command_text[1]) > 0:
 			if command_text[0] == 'ride-info':
@@ -98,8 +119,6 @@ def bot():
 				response_body = bot_actions.cancel_ride(command_text[1])
 		else:
 			response_body = {'text': 'Missing Required Parameter `ride id` '}
-
-
 	else:
 		response_body = {'text': 'Internal Application Error'}
 
@@ -116,7 +135,10 @@ def interactive():
 	slack_user_info = slackhelper.user_info(request_payload['user']['id'])
 	user_data = slack_user_info['user']
 
-	current_user = UserRepo.find_or_create(by='slack_uid', value=request_payload["user"]["id"], user_data=user_data)
+	current_user = UserRepo.find_or_create(
+		by='slack_uid', value=request_payload["user"]["id"],
+		user_data=user_data
+	)
 
 	bot_actions = BotActions(current_user=current_user)
 

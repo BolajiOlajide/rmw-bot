@@ -12,7 +12,6 @@ class Ride(Base, db.Model):
 	max_seats = db.Column(db.Integer(), nullable=False)
 	seats_left = db.Column(db.Integer())
 	status = db.Column(db.Integer())
-	
 	driver = db.relationship("User")
 
 	def __init__(self, driver_id, origin, destination, take_off, max_seats=1, seats_left=1, status=1):
@@ -29,4 +28,6 @@ class Ride(Base, db.Model):
 		self.status = status
 
 	def __repr__(self):
-		return "Ride Detail: Driver Name: {} | Origin: {} | Destination: {} | Take Off Time: {} | Seats Available: {}".format(self.driver.full_name, self.origin, self.destination, self.take_off, self.seats_left)
+		return "Ride Detail: Driver Name: {} | Origin: {} | Destination: {} | Take Off Time: {} | \
+			Seats Available: {}".format(
+			self.driver.full_name, self.origin, self.destination, self.take_off, self.seats_left)

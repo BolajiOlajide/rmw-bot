@@ -2,15 +2,15 @@ from app.models.ride import Ride
 
 
 class RideRepo:
-	
+
 	@staticmethod
 	def find_by_id(id):
 		return Ride.query.filter_by(id=id).first()
-	
+
 	@staticmethod
 	def all():
 		return Ride.query.all()
-	
+
 	@staticmethod
 	def increment_seats_left(ride):
 		ride.seats_left += 1
@@ -23,7 +23,8 @@ class RideRepo:
 
 	@staticmethod
 	def is_ride_exist(driver_id, origin, destination, take_off):
-		ride_detail = Ride.query.filter_by(driver_id=driver_id, origin=origin, destination=destination, take_off=take_off).first()
+		ride_detail = Ride.query.filter_by(
+			driver_id=driver_id, origin=origin, destination=destination, take_off=take_off).first()
 		return True if ride_detail else False
 
 	@staticmethod
