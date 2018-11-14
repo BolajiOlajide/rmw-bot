@@ -27,7 +27,8 @@ def convert_time_to_timestamp(time_string):
 	today = datetime.today()
 	time_string = time_string.split(':')
 	time_string[1] = '59' if int(time_string[1]) > 59 else time_string[1]
-	full_time_string = '{} {}, {} {}:{}'.format(today.day, today.month, today.year, time_string[0], time_string[1])
+	full_time_string = '{} {}, {} {}:{}'.format(
+		today.day, today.month, today.year, time_string[0], time_string[1])
 	return datetime.strptime(full_time_string, '%d %m, %Y %H:%M')
 
 
