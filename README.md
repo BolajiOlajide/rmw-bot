@@ -24,7 +24,7 @@ if installed, create a python3.6 virtual environment with the command
 pipenv --python=python3.6 shell
 ```
 
-- install the application's dependencies with the command `pipenv install -r requirements.txt`
+- install the application's dependencies with the command `pipenv install`
 
 ## Contributors
 
