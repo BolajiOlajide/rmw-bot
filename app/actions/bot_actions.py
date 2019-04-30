@@ -19,7 +19,7 @@ class BotActions:
 	def add_ride(self, origin, destination, take_off, max_seats):
 
 		if take_off.find(':') < 1:
-			error_msg = "Your Time Format is invalid, missing colon. Formats: 08:00 or 18:59"
+			error_msg = "The time format provided is invalid. It must be in 24hr format: 08:00 or 18:59"
 			msg = {
 				"errors": [
 					{
@@ -40,7 +40,7 @@ class BotActions:
 				"errors": [
 					{
 						"name": "max_seats",
-						"error": "Number of Riders must be Integer"
+						"error": "Number of riders must be integer (example: 2)"
 					}
 				]
 			}
@@ -67,17 +67,20 @@ class BotActions:
 		new_ride_data = self.ride_repo.new_ride(**ride_args)
 
 		if new_ride_data:
-			msg = {"text": ":white_check_mark: Ride to {destination}, from {origin}, by {take_off} saved! \
-				Thanks for sharing {max_seats} spaces.".format(
-				destination=new_ride_data.destination, origin=new_ride_data.origin,
-				take_off=ctime(new_ride_data.take_off.timestamp()), max_seats=new_ride_data.max_seats)}
+			destination=new_ride_data.destination
+			origin=new_ride_data.origin
+			take_off=ctime(new_ride_data.take_off.timestamp())
+			max_seats=new_ride_data.max_seats
+			text = f""">>>:white_check_mark: Ride to {destination}, from {origin}, by {take_off} saved!
+Thanks for sharing {max_seats} spaces."""
+			msg = {"text": text}
 			return msg
 		else:
 			msg = {"text": ":no_entry_sign: Error occurred saving Ride! Please try again."}
 			return msg
 
-	def get_ride_info(self, id):
-		ride = self.ride_repo.find_by_id(id)
+	def get_ride_info(self, _id):
+		ride = self.ride_repo.find_by_id(_id)
 
 		if not ride:
 			return {'text': 'No Ride With Provided ID. - `/rmw show-rides` to get all rides.'}
@@ -93,12 +96,22 @@ class BotActions:
 				time='{time}', fallback=ride.take_off)
 
 			ride_status = check_ride_status(ride)
+			text = f"""
+Details for Ride _{_id}_:
+>>>*Driver Details:* _{driver_detail}_
+*Origin:* _{ride.origin}_
+*Destination:* _{ride.destination}_
+*Take Off Time:* _{takeoff_time}_
+*Seats Available:* _{ride.seats_left}_
+*Status:* _{ride_status}_
+"""
 
-			return {'text': 'Details for Ride {}: \n ```\n Driver Details: {}\
-							\n Origin: {}\n Destination: {} \n Take Off Time: {}\
-							\n Seats Available: {}\n Status: {}```'.format(
-				id, driver_detail, ride.origin, ride.destination, takeoff_time,
-				ride.seats_left, ride_status)}
+			# return {'text': 'Details for Ride {}: \n ```\n Driver Details: {}\
+			# 				\n Origin: {}\n Destination: {} \n Take Off Time: {}\
+			# 				\n Seats Available: {}\n Status: {}```'.format(
+			# 	id, driver_detail, ride.origin, ride.destination, takeoff_time,
+			# 	ride.seats_left, ride_status)}
+			return {'text': text}
 
 	def join_ride(self, id):
 		ride = self.ride_repo.find_by_id(id)
@@ -130,13 +143,22 @@ class BotActions:
 					epoch=timestamp_to_epoch(ride.take_off), date='{date_short_pretty}', time='{time}',
 					fallback=ride.take_off)
 				ride_status = check_ride_status(ride)
-				text += str('```Ride Id: {} \nDriver name: {} <@{}> \n\
-							Driver number: {} \nSpace available: {} \nPick up point: {} \n\
-							Destination: {} \nTake off: {} \nStatus: {}```\n').format(
-					ride.id, ride.driver.full_name, ride.driver.slack_uid,
-					ride.driver.phone_number,
-					ride.seats_left, ride.origin, ride.destination, take_off_time,
-					ride_status)
+				# text += str('```Ride Id: {} \nDriver name: {} <@{}> \n\
+				# 			Driver number: {} \nSpace available: {} \nPick up point: {} \n\
+				# 			Destination: {} \nTake off: {} \nStatus: {}```\n').format(
+				# 	ride.id, ride.driver.full_name, ride.driver.slack_uid,
+				# 	ride.driver.phone_number,
+				# 	ride.seats_left, ride.origin, ride.destination, take_off_time,
+				# 	ride_status)
+				text += f"""```Ride Id: {ride.id}
+Driver name: {ride.driver.full_name} <@{ride.driver.slack_uid}>
+Driver number: {ride.driver.phone_number}
+Space available: {ride.seats_left}
+Pick up point: {ride.origin}
+Destination: {ride.destination}
+Take off: {take_off_time}
+Status: {ride_status}```
+"""
 		else:
 			text = ':disappointed: No rides available for now, please check back later in the day'
 

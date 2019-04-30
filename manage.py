@@ -50,7 +50,8 @@ element = [
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-	response = jsonify({'YOU': 'Are Awesome!'})
+	msg = { 'status': 'success' }
+	response = jsonify(msg)
 	response.status_code = 200
 	return response
 
@@ -68,7 +69,7 @@ def bot():
 	bot_actions = BotActions(current_user=current_user)
 
 	if command_text[0] not in allowed_commands:
-		response_body = {'text': 'Invalid Command'}
+		response_body = {'text': 'Invalid Command. Use the `/rmw help` to get help.'}
 
 	elif slack_response['ok']:
 		if len(command_text) == 1:
@@ -120,7 +121,7 @@ def bot():
 		else:
 			response_body = {'text': 'Missing Required Parameter `ride id` '}
 	else:
-		response_body = {'text': 'Internal Application Error'}
+		response_body = {'text': 'An error occurred. Contact the admin.'}
 
 	response = jsonify(response_body)
 	response.status_code = 200

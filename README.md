@@ -34,6 +34,8 @@ pipenv --python=python3.6 shell
 make upgrade
 ```
 
+- You'll need to down [ngrok](https://ngrok.com/) to act as a tunneling engine to serve your APP.
+
 ## Contributors
 
 View the list of [contributors](https://github.com/BolajiOlajide/rmw-bot/contributors) who participate in this project.
