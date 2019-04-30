@@ -26,6 +26,14 @@ pipenv --python=python3.6 shell
 
 - install the application's dependencies with the command `pipenv install`
 
+- make a copy of the `.env.example` file named `.env` and populate with your development details
+
+- run migrations on the DB by running the command from the root of the project
+
+```bash
+make upgrade
+```
+
 ## Contributors
 
 View the list of [contributors](https://github.com/BolajiOlajide/rmw-bot/contributors) who participate in this project.

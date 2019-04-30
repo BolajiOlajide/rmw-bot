@@ -1,9 +1,5 @@
 APP_NAME=rmw
 
-# Save dependencies
-freeze:
-	pip freeze > requirements.txt
-
 migrate:
 	python manage.py db migrate
 
