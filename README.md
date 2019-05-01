@@ -6,6 +6,19 @@ This repository contains the source code for the ride-my-way slack application t
 
 ## Installation
 
+Installation has been automated by the script `setup.sh` contained in the root of the project.
+You can choose one of two ways to do installation listed below.
+
+### AUTOMATIC
+
+This leverages the shell script provided. To run it just run the command below from the command line:
+
+```bash
+./setup.sh
+```
+
+### MANUAL
+
 - this project uses [pipenv](https://docs.pipenv.org/en/latest/) for managing dependency. Ensure `pipenv` is installed. You can confirm this by checking the version installed on your PC with the command
 
 ```bash
