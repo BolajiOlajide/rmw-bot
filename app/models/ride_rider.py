@@ -6,6 +6,7 @@ class RideRider(Base, db.Model):
 
 	ride_id = db.Column(db.Integer(), db.ForeignKey('rides.id'))
 	rider_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
+	isActive = db.Column(db.Boolean(), default=True)
 
 	ride = db.relationship("Ride")
 	rider = db.relationship("User")

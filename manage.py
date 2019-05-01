@@ -90,21 +90,21 @@ def bot():
 
 			else:
 				msg = """The following commands are available on the RideMyWay platform
+>>>
+:heavy_plus_sign: Add a ride `/rmw add-ride` This is used to add a ride to the system.
+This option is only available to drivers.
 
-	:heavy_plus_sign: Add a ride `/rmw add-ride` This is used to add a ride to the system.
-	This option is only available to drivers.
+:bow_and_arrow: Show Rides `/rmw show-rides` This is used to view all recent rides in the system.
 
-	:bow_and_arrow:  Show Rides `/rmw show-rides` This is used to view all recent rides in the system.
+:information_source: Get Ride Info `/rmw ride-info <ride_id>` Get details of a ride
 
-	:information_source: Get Ride Info `/rmw ride-info <ride_id>` Get details of a ride
+:juggling: Join a Ride - `/rmw join-ride <ride_id>` Join a ride using the ride ID
 
-	:juggling: Join a Ride - `/rmw join-ride <ride_id>` Join a ride using the ride ID
+:walking: Leave a ride - `/rmw leave-ride <ride_id>` Join a ride using the ride ID
 
-	:walking: Leave a ride - `/rmw leave-ride <ride_id>` Join a ride using the ride ID
+:mailbox_closed: Cancel a ride - `/rmw cancel-ride <ride_id>` Cancel a ride using the ride ID
 
-	:mailbox_closed:  Cancel a ride - `/rmw cancel-ride <ride_id>` Cancel a ride using the ride ID
-
-	:speaking_head_in_silhouette: Help - `/rmw help` Display RMW help menu
+:speaking_head_in_silhouette: Help - `/rmw help` Display RMW help menu
 				"""
 				response_body = {'text': msg}
 
@@ -112,12 +112,12 @@ def bot():
 		elif len(command_text) > 1 and int(command_text[1]) > 0:
 			if command_text[0] == 'ride-info':
 				response_body = bot_actions.get_ride_info(command_text[1])
-
-			if command_text[0] == 'join-ride':
+			elif command_text[0] == 'join-ride':
 				response_body = bot_actions.join_ride(command_text[1])
-
-			if command_text[0] == 'cancel-ride':
+			elif command_text[0] == 'cancel-ride':
 				response_body = bot_actions.cancel_ride(command_text[1])
+			elif command_text[0] == 'leave-ride':
+				response_body = bot_actions.leave_ride(command_text[1])
 		else:
 			response_body = {'text': 'Missing Required Parameter `ride id` '}
 	else:

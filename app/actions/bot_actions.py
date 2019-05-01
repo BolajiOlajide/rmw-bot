@@ -105,19 +105,13 @@ Details for Ride _{_id}_:
 *Seats Available:* _{ride.seats_left}_
 *Status:* _{ride_status}_
 """
-
-			# return {'text': 'Details for Ride {}: \n ```\n Driver Details: {}\
-			# 				\n Origin: {}\n Destination: {} \n Take Off Time: {}\
-			# 				\n Seats Available: {}\n Status: {}```'.format(
-			# 	id, driver_detail, ride.origin, ride.destination, takeoff_time,
-			# 	ride.seats_left, ride_status)}
 			return {'text': text}
 
 	def join_ride(self, id):
 		ride = self.ride_repo.find_by_id(id)
 
 		if not ride or ride.status == 0:
-			return {'text': 'Ride Does Not Exists Or Is Expired. - `/rmw show-rides` to get all rides.'}
+			return {'text': 'Ride Does Not Exists Or Has Expired. - `/rmw show-rides` to get all rides.'}
 		else:
 			if ride.seats_left < 1 or self.ride_rider_repo.count_ride_riders(ride.id) == ride.max_seats \
 				or self.ride_rider_repo.is_rider_already_joined(
@@ -138,7 +132,7 @@ Details for Ride _{_id}_:
 
 		if len(rides) > 0:
 			for ride in rides:
-				# format the take_of_time string
+				# format the take_off_time string
 				take_off_time = '<!date^{epoch}^{date} at {time}|{fallback}>'.format(
 					epoch=timestamp_to_epoch(ride.take_off), date='{date_short_pretty}', time='{time}',
 					fallback=ride.take_off)
@@ -166,8 +160,8 @@ Status: {ride_status}```
 			'text': text,
 		}
 
-	def cancel_ride(self, id):
-		ride = self.ride_repo.find_by_id(id)
+	def cancel_ride(self, _id):
+		ride = self.ride_repo.find_by_id(_id)
 
 		if self.current_user.id != ride.driver_id:
 			return {'text': 'You are not authorized to cancel this ride'}
@@ -177,7 +171,7 @@ Status: {ride_status}```
 		ride_status = check_ride_status(ride)
 
 		if ride_status == 'INACTIVE':
-			return {'text': 'This Ride is currently expired or cancelled'}
+			return {'text': 'This Ride is currently expired or has been cancelled'}
 
 		ride_riders = self.ride_rider_repo.ride_rider_list(ride.id)
 
@@ -186,20 +180,46 @@ Status: {ride_status}```
 			date='{date_short_pretty}', time='{time}',
 			fallback=ride.take_off)
 
-		text = 'Sorry :disappointed: {} has cancelled the {} to {} ride for {}. \
-			- Please check for other rides.' \
-			.format(self.current_user.full_name, ride.origin, ride.destination, take_off_time)
-
+		text = f"""Sorry 😞 <@{ride.driver.slack_uid}> has cancelled the {ride.origin} to {ride.destination} for {take_off_time}
+Kindly opt-in for another ride.
+"""
+		ride.seats_left = None
 		ride.status = 0
 
 		ride.save()
 
 		for ride_rider in ride_riders:
 			rider = self.user_repo.find_by_id(ride_rider.rider_id)
-			return slackhelper.post_message(text, rider.slack_uid)
+			slackhelper.post_message(text, rider.slack_uid)
 
-		response_text = 'Your Ride has been cancelled successfully'
+		response_text = 'Your Ride has been cancelled successfully.'
 
-		return {
-			'text': response_text
-		}
+		return {'text': response_text}
+
+	def leave_ride(self, ride_id):
+		ride = self.ride_repo.find_by_id(ride_id)
+		is_rider_already_joined
+
+		ride_rider = self.ride_rider_repo.find_ride_rider(
+			ride_id,
+			self.current_user.id
+		)
+		text = '🤨 You can\'t leave this ride as you are not an active rider on this ride.'
+		if not ride_rider:
+			return {'text': text}
+
+		# set active status to false
+		ride_rider.isActive = False
+		ride_rider.save()
+
+		response_text = f"""Hello,
+<@{self.current_user.slack_uid}> has opted out of your ride thus opening up a space
+for one more person.
+"""
+
+		ride = self.ride_repo.find_by_id(ride_id)
+
+		# notify driver
+		slackhelper.post_message(response_text, ride.driver.slack_uid)
+
+		return {'text': f"You've successful opted out of ride {ride_id} with <@{ride.driver.slack_uid}>"}
