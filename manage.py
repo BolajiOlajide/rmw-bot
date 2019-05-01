@@ -62,6 +62,9 @@ def bot():
 	response_body = {'text': 'I do not understand that command. `/rmw help` for available commands'}
 	request_slack_id = request.data.get('user_id')
 	message_trigger = request.data.get('trigger_id')
+	webhook_url = request_payload["response_url"]
+	print(request.data.get('response_url'))
+	return jsonify(response_body)
 
 	slack_response = slackhelper.user_info(request_slack_id)
 
@@ -142,42 +145,21 @@ def interactive():
 	)
 
 	bot_actions = BotActions(current_user=current_user)
+	check_for_error = True
 
 	if request_payload["type"] == "dialog_submission":
 		slack_data = bot_actions.add_ride(
 			origin=request_payload["submission"]["origin"],
 			destination=request_payload["submission"]["destination"],
 			take_off=request_payload["submission"]["take_off"],
-			max_seats=request_payload["submission"]["max_seats"])
-
-		response = requests.post(
-			webhook_url, data=json.dumps(slack_data),
-			headers={'Content-Type': 'application/json'}
+			max_seats=request_payload["submission"]["max_seats"]
 		)
-
-		if response.status_code != 200:
-			if slack_data["errors"]:
-				response = jsonify(slack_data)
-				response.status_code = 200
-				return response
-			else:
-				raise ValueError(
-					'Request to slack returned an error %s, the response is:\n%s'
-					% (response.status_code, response.text)
-				)
 
 	elif request_payload["type"] == "dialog_cancellation":
 		slack_data = {'text': "We hope you change your mind and share a ride"}
-		response = requests.post(
-			webhook_url, data=json.dumps(slack_data),
-			headers={'Content-Type': 'application/json'}
-		)
-		if response.status_code != 200:
-			raise ValueError(
-				'Request to slack returned an error %s, the response is:\n%s'
-				% (response.status_code, response.text)
-			)
+		check_for_error = False
 
+	slackhelper.send_delayed_msg(webhook_url, slack_data, check_for_error)
 	return "", 200
 
 

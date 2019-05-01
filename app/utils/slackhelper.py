@@ -1,3 +1,5 @@
+import requests
+import json
 from slackclient import SlackClient
 from config import get_env
 
@@ -51,3 +53,21 @@ class SlackHelper:
 			trigger_id=trigger_id,
 			dialog=dialog
 		)
+
+	def send_delayed_msg(self, webhook_url, slack_data, check_error=True):
+		response = requests.post(
+			webhook_url, data=json.dumps(slack_data),
+			headers={'Content-Type': 'application/json'}
+		)
+
+		if response.status_code != 200:
+			if check_error and slack_data["errors"]:
+				response = jsonify(slack_data)
+				response.status_code = 200
+				return response
+			else:
+				value_error_message = f"""Request to slack returned an error {response.status_code}, the response is:
+{response.text}
+"""
+				raise ValueError(value_error_message)
+		return response
