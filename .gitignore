@@ -110,3 +110,6 @@ venv.bak/
 
 # ngrok
 ngrok
+
+# postgres data
+postgres/data

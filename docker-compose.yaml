@@ -4,12 +4,12 @@ services:
   bot:
     build:
       context: .
-    command: ["make", "start"]
+    command: ["python", "manage.py", "runserver", "-host=0.0.0.0"]
     depends_on:
       - postgres
-	env_file: .env
-	environment:
-		DATABASE_URL: postgres://postgres@postgres/rmw
+    env_file: .env
+    environment:
+        DATABASE_URL: postgres://postgres@postgres/rmw
     ports:
       - '5000:5000'
     volumes:

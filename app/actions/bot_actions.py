@@ -107,13 +107,15 @@ Details for Ride _{_id}_:
 """
 			return {'text': text}
 
-	def join_ride(self, id):
-		ride = self.ride_repo.find_by_id(id)
+	def join_ride(self, _id):
+		ride = self.ride_repo.find_by_id(_id)
 
 		if not ride or ride.status == 0:
 			return {'text': 'Ride Does Not Exists Or Has Expired. - `/rmw show-rides` to get all rides.'}
 		else:
-			if ride.seats_left < 1 or self.ride_rider_repo.count_ride_riders(ride.id) == ride.max_seats \
+			if ride.driver.id == self.current_user.id:
+				return {'text': 'Sorry, You\'re can\'t be a driver and a rider at the same time'}
+			elif ride.seats_left < 1 or self.ride_rider_repo.count_ride_riders(ride.id) == ride.max_seats \
 				or self.ride_rider_repo.is_rider_already_joined(
 						ride_id=ride.id, rider_id=self.current_user.id):
 				return {'text': 'Sorry, You\'re Already Booked or This Ride Is Fully Booked'}

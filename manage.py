@@ -47,6 +47,24 @@ element = [
 	}
 ]
 
+help_message = """The following commands are available on the RideMyWay platform
+>>>
+:heavy_plus_sign: *Add a ride* `/rmw add-ride` _This is used to add a ride to the system.
+This option is only available to drivers._
+
+:bow_and_arrow: *Show Rides* `/rmw show-rides` _This is used to view all recent rides in the system._
+
+:information_source: *Get Ride Info* `/rmw ride-info <ride_id>` _Get details of a ride_
+
+:juggling: *Join a Ride* - `/rmw join-ride <ride_id>` _Join a ride using the ride ID_
+
+:walking: *Leave a ride* - `/rmw leave-ride <ride_id>` _Join a ride using the ride ID_
+
+:mailbox_closed: *Cancel a ride* - `/rmw cancel-ride <ride_id>` _Cancel a ride using the ride ID_
+
+:speaking_head_in_silhouette: *Help* - `/rmw help` _Display RMW help menu_
+"""
+
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -59,12 +77,29 @@ def home():
 @app.route('/bot', methods=['POST', 'GET', 'PATCH'])
 def bot():
 	command_text = request.data.get('text').split(" ")
-	response_body = {'text': 'I do not understand that command. `/rmw help` for available commands'}
 	request_slack_id = request.data.get('user_id')
+	webhook_url = request.data.get('response_url')
+
+	if (command_text[0] == 'help'):
+		response_body = {'text': help_message}
+		response = jsonify(response_body)
+		response.status_code = 200
+		slackhelper.send_delayed_msg(webhook_url, response_body)
+		return response
+
+	intro_message = f"""
+Hey <@{request_slack_id}>,
+
+I'm currently processing your request. Give me a minute and I'll be back with a response.
+:smile:
+"""
+	response_body = {'text': intro_message}
+	response = jsonify(response_body)
+	response.status_code = 200
+	slackhelper.send_delayed_msg(webhook_url, response_body)
+
+	response_body = {'text': 'I do not understand that command. `/rmw help` for available commands'}
 	message_trigger = request.data.get('trigger_id')
-	webhook_url = request_payload["response_url"]
-	print(request.data.get('response_url'))
-	return jsonify(response_body)
 
 	slack_response = slackhelper.user_info(request_slack_id)
 
@@ -92,24 +127,7 @@ def bot():
 				response_body = {'text': msg}
 
 			else:
-				msg = """The following commands are available on the RideMyWay platform
->>>
-:heavy_plus_sign: Add a ride `/rmw add-ride` This is used to add a ride to the system.
-This option is only available to drivers.
-
-:bow_and_arrow: Show Rides `/rmw show-rides` This is used to view all recent rides in the system.
-
-:information_source: Get Ride Info `/rmw ride-info <ride_id>` Get details of a ride
-
-:juggling: Join a Ride - `/rmw join-ride <ride_id>` Join a ride using the ride ID
-
-:walking: Leave a ride - `/rmw leave-ride <ride_id>` Join a ride using the ride ID
-
-:mailbox_closed: Cancel a ride - `/rmw cancel-ride <ride_id>` Cancel a ride using the ride ID
-
-:speaking_head_in_silhouette: Help - `/rmw help` Display RMW help menu
-				"""
-				response_body = {'text': msg}
+				response_body = {'text': help_message}
 
 		# These Commands Require A Ride ID
 		elif len(command_text) > 1 and int(command_text[1]) > 0:
@@ -128,6 +146,7 @@ This option is only available to drivers.
 
 	response = jsonify(response_body)
 	response.status_code = 200
+	slackhelper.send_delayed_msg(webhook_url, response_body)
 	return response
 
 
