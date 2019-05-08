@@ -10,7 +10,6 @@ class Ride(Base, db.Model):
     destination = db.Column(db.String(80), nullable=False)
     take_off = db.Column(db.DateTime(), nullable=False)
     max_seats = db.Column(db.Integer(), nullable=False)
-    seats_left = db.Column(db.Integer())
     status = db.Column(db.Integer())
     driver = db.relationship("User")
 

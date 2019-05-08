@@ -85,7 +85,7 @@ def bot():
         response = jsonify(response_body)
         response.status_code = 200
         slackhelper.send_delayed_msg(webhook_url, response_body)
-        return response
+        return jsonify({"text": ""})
 
     intro_message = f"""
 Hey <@{request_slack_id}>,
@@ -146,8 +146,9 @@ I'm currently processing your request. Give me a minute and I'll be back with a 
     else:
         response_body = {"text": "An error occurred. Contact the admin."}
 
-    response = jsonify(response_body)
+    response = jsonify({"text": ""})
     response.status_code = 200
+    print(response)
     slackhelper.send_delayed_msg(webhook_url, response_body)
     return response
 

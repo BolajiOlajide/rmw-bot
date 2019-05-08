@@ -45,7 +45,6 @@ class SlackHelper:
         )
 
     def dialog(self, dialog, trigger_id):
-        print("opening dialog")
         return self.slack_client.api_call(
             "dialog.open", trigger_id=trigger_id, dialog=dialog
         )
