@@ -32,10 +32,10 @@ class RideRepo:
 
     @staticmethod
     def new_ride(
-        driver_id, origin, destination, take_off, max_seats=1, seats_left=1, status=1
+        driver_id, origin, destination, take_off, max_seats=1, status=1
     ):
         ride = Ride(
-            driver_id, origin, destination, take_off, max_seats, seats_left, status
+            driver_id, origin, destination, take_off, max_seats, status
         )
         ride.save()
         return ride

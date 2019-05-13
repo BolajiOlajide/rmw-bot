@@ -59,7 +59,6 @@ class BotActions:
             "destination": destination,
             "take_off": take_off_time,
             "max_seats": max_seats,
-            "seats_left": max_seats,
             "status": 1,
         }
 
@@ -139,7 +138,6 @@ Details for Ride _{_id}_:
                 self.ride_rider_repo.new_ride_rider(
                     ride_id=ride.id, rider_id=self.current_user.id
                 )
-                self.ride_repo.decrement_seats_left(ride)
                 return {"text": "Successfully Joined Ride"}
 
     def show_rides(self):
@@ -199,7 +197,6 @@ Status: {ride_status}```
         text = f"""Sorry 😞 <@{ride.driver.slack_uid}> has cancelled the {ride.origin} to {ride.destination} for {take_off_time}
 Kindly opt-in for another ride.
 """
-        ride.seats_left = None
         ride.status = 0
 
         ride.save()
@@ -214,7 +211,6 @@ Kindly opt-in for another ride.
 
     def leave_ride(self, ride_id):
         ride = self.ride_repo.find_by_id(ride_id)
-        is_rider_already_joined
 
         ride_rider = self.ride_rider_repo.find_ride_rider(ride_id, self.current_user.id)
         text = (

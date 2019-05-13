@@ -20,7 +20,6 @@ class Ride(Base, db.Model):
         destination,
         take_off,
         max_seats=1,
-        seats_left=1,
         status=1,
     ):
         self.driver_id = driver_id
@@ -29,10 +28,6 @@ class Ride(Base, db.Model):
         self.take_off = take_off
         self.max_seats = max_seats
 
-        if max_seats > 1:
-            seats_left = max_seats
-
-        self.seats_left = seats_left
         self.status = status
 
     def __repr__(self):
@@ -42,5 +37,4 @@ class Ride(Base, db.Model):
             self.origin,
             self.destination,
             self.take_off,
-            self.seats_left,
         )
