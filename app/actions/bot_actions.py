@@ -101,19 +101,23 @@ Thanks for sharing {max_seats} spaces."""
             )
 
             ride_status = check_ride_status(ride)
+            rider_count = self.ride_rider_repo.count_ride_riders(_id)
+            seats_left = ride.max_seats - rider_count
             text = f"""
 Details for Ride _{_id}_:
 >>>*Driver Details:* _{driver_detail}_
 *Origin:* _{ride.origin}_
 *Destination:* _{ride.destination}_
 *Take Off Time:* _{takeoff_time}_
-*Seats Available:* _{ride.seats_left}_
+*Seats Available:* _{seats_left}_
 *Status:* _{ride_status}_
 """
             return {"text": text}
 
     def join_ride(self, _id):
         ride = self.ride_repo.find_by_id(_id)
+        rider_count = self.ride_rider_repo.count_ride_riders(ride.id)
+        seats_left = ride.max_seats - rider_count
 
         if not ride or ride.status == 0:
             return {
@@ -125,8 +129,8 @@ Details for Ride _{_id}_:
                     "text": "Sorry, You're can't be a driver and a rider at the same time"
                 }
             elif (
-                ride.seats_left < 1
-                or self.ride_rider_repo.count_ride_riders(ride.id) == ride.max_seats
+                seats_left < 1
+                or rider_count == ride.max_seats
                 or self.ride_rider_repo.is_rider_already_joined(
                     ride_id=ride.id, rider_id=self.current_user.id
                 )
@@ -150,6 +154,8 @@ Details for Ride _{_id}_:
 
         if len(rides) > 0:
             for ride in rides:
+                rider_count = self.ride_rider_repo.count_ride_riders(ride.id)
+                seats_left = ride.max_seats - rider_count
                 # format the take_off_time string
                 take_off_time = "<!date^{epoch}^{date} at {time}|{fallback}>".format(
                     epoch=timestamp_to_epoch(ride.take_off),
@@ -161,7 +167,7 @@ Details for Ride _{_id}_:
                 text += f"""```Ride Id: {ride.id}
 Driver name: {ride.driver.full_name} <@{ride.driver.slack_uid}>
 Driver number: {ride.driver.phone_number}
-Space available: {ride.seats_left}
+Space available: {seats_left}
 Pick up point: {ride.origin}
 Destination: {ride.destination}
 Take off: {take_off_time}
