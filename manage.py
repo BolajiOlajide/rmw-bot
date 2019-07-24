@@ -105,7 +105,9 @@ I'm currently processing your request. Give me a minute and I'll be back with a 
 
     slack_response = slackhelper.user_info(request_slack_id)
 
-    current_user = UserRepo.find_or_create(request_slack_id, user_data=slack_response['user'])
+    current_user = UserRepo.find_or_create(
+        request_slack_id, user_data=slack_response["user"]
+    )
     bot_actions = BotActions(current_user=current_user)
 
     if command_text[0] not in allowed_commands:

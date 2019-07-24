@@ -31,12 +31,8 @@ class RideRepo:
         return True if ride_detail else False
 
     @staticmethod
-    def new_ride(
-        driver_id, origin, destination, take_off, max_seats=1, status=1
-    ):
-        ride = Ride(
-            driver_id, origin, destination, take_off, max_seats, status
-        )
+    def new_ride(driver_id, origin, destination, take_off, max_seats=1, status=1):
+        ride = Ride(driver_id, origin, destination, take_off, max_seats, status)
         ride.save()
         return ride
 
