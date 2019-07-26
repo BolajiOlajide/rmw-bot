@@ -3,9 +3,6 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
-[dev-packages]
-black = "*"
-
 [packages]
 gunicorn = "==19.8.1"
 itsdangerous = "==0.24"
@@ -23,7 +20,6 @@ Flask-Migrate = "==2.1.1"
 Flask-Script = "==2.0.6"
 Flask-SQLAlchemy = "==2.3.2"
 SQLAlchemy = "==1.2.7"
-black = "*"
 
 [requires]
 python_version = "3.6"
