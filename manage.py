@@ -80,19 +80,14 @@ def bot():
     request_slack_id = request.data.get("user_id")
     webhook_url = request.data.get("response_url")
 
-    if command_text[0] == "help":
+    if command_text[0] == "help" or (not command_text):
         response_body = {"text": help_message}
         response = jsonify(response_body)
         response.status_code = 200
-        slackhelper.send_delayed_msg(webhook_url, response_body)
-        return jsonify({"text": ""})
+        # slackhelper.send_delayed_msg(webhook_url, response_body)
+        return response
 
-    intro_message = f"""
-Hey <@{request_slack_id}>,
-
-I'm currently processing your request. Give me a minute and I'll be back with a response.
-:smile:
-"""
+    intro_message = ""
     response_body = {"text": intro_message}
     response = jsonify(response_body)
     response.status_code = 200
@@ -150,7 +145,6 @@ I'm currently processing your request. Give me a minute and I'll be back with a 
 
     response = jsonify({"text": ""})
     response.status_code = 200
-    print(response)
     slackhelper.send_delayed_msg(webhook_url, response_body)
     return response
 
