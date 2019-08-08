@@ -1,6 +1,7 @@
 from flask_api import FlaskAPI
-from config.env import app_env
+
 from app.utils import db
+from config.env import app_env
 
 
 def create_app(config_name):

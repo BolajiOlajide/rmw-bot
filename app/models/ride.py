@@ -1,4 +1,4 @@
-from .base import db, Base
+from .base import Base, db
 
 
 class Ride(Base, db.Model):

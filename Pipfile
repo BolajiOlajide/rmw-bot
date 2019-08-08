@@ -26,3 +26,4 @@ python_version = "3.6"
 
 [dev-packages]
 black = "==19.3b0"
+isort = "*"

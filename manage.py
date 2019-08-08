@@ -1,14 +1,16 @@
-from flask_script import Manager
-from flask import jsonify, request
-from flask_migrate import Migrate, MigrateCommand
-import requests
 import json
-from app import create_app
-from app.utils import db, allowed_commands, slackhelper
-from config import get_env
+from threading import Thread
 
+import requests
+from flask import current_app, jsonify, request
+from flask_migrate import Migrate, MigrateCommand
+from flask_script import Manager
+
+from app import create_app
 from app.actions.bot_actions import BotActions
 from app.repositories.user_repo import UserRepo
+from app.utils import allowed_commands, db, slackhelper
+from config import get_env
 
 app = create_app(get_env("APP_ENV"))
 migrate = Migrate(app, db)
@@ -76,9 +78,17 @@ def home():
 
 @app.route("/bot", methods=["POST", "GET", "PATCH"])
 def bot():
+    # import pdb; pdb.set_trace()
     command_text = request.data.get("text").split(" ")
     request_slack_id = request.data.get("user_id")
     webhook_url = request.data.get("response_url")
+    import pdb
+
+    pdb.set_trace()
+
+    @current_app.after_request
+    def after_stuff(request):
+        print("Sending stuff!!")
 
     if command_text[0] == "help" or (not command_text[0]):
         response_body = {"text": help_message}
@@ -86,7 +96,16 @@ def bot():
         response.status_code = 200
         return response
 
-    intro_message = "Attending to your request ..."
+    if command_text[0] not in allowed_commands:
+        response_body = {"text": "Invalid Command. Use the `/rmw help` to get help."}
+        response = jsonify(response_body)
+        response.status_code = 200
+        return response
+
+    intro_message = """>>>
+Processing request
+"""
+    print("====> okaynjdj")
     response_body = {"text": intro_message}
     slackhelper.send_delayed_msg(webhook_url, response_body)
 
@@ -102,13 +121,13 @@ def bot():
     )
     bot_actions = BotActions(current_user=current_user)
 
-    if command_text[0] not in allowed_commands:
-        response_body = {"text": "Invalid Command. Use the `/rmw help` to get help."}
-
-    elif slack_response["ok"]:
+    if slack_response["ok"]:
         if len(command_text) == 1:
             if command_text[0] == "show-rides":
                 response_body = bot_actions.show_rides()
+                import pdb
+
+                pdb.set_trace()
 
             elif command_text[0] == "add-ride":
                 dialog = {
@@ -140,9 +159,8 @@ def bot():
     else:
         response_body = {"text": "An error occurred. Contact the admin."}
 
-    response = jsonify({"text": ""})
+    response = jsonify(response_body)
     response.status_code = 200
-    slackhelper.send_delayed_msg(webhook_url, response_body)
     return response
 
 

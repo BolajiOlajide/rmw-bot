@@ -19,3 +19,6 @@ install:
 
 setup:
 	./setup fresh
+
+lint:
+	black . && isort -rc .

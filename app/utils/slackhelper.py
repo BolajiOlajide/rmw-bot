@@ -1,6 +1,8 @@
-import requests
 import json
+
+import requests
 from slackclient import SlackClient
+
 from config import get_env
 
 

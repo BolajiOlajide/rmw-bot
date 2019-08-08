@@ -1,6 +1,6 @@
-from os import path, environ
-from dotenv import load_dotenv
+from os import environ, path
 
+from dotenv import load_dotenv
 
 env_path = path.join(path.dirname(__file__), path.pardir, ".env")
 load_dotenv(env_path, override=True)

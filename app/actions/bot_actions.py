@@ -4,12 +4,8 @@ from time import ctime
 from app.repositories.ride_repo import RideRepo
 from app.repositories.ride_rider_repo import RideRiderRepo
 from app.repositories.user_repo import UserRepo
-from app.utils import (
-    timestamp_to_epoch,
-    convert_time_to_timestamp,
-    slackhelper,
-    check_ride_status,
-)
+from app.utils import (check_ride_status, convert_time_to_timestamp,
+                       slackhelper, timestamp_to_epoch)
 
 
 class BotActions:
