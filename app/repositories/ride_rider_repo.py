@@ -44,7 +44,9 @@ class RideRiderRepo:
 
     @staticmethod
     def find_ride_rider(ride_id, rider_id):
-        return RideRider.query.filter_by(rider_id=rider_id, ride_id=ride_id, isActive=True).first()
+        return RideRider.query.filter_by(
+            rider_id=rider_id, ride_id=ride_id, isActive=True
+        ).first()
 
     @staticmethod
     def remove_ride_rider(ride_id, rider_id):

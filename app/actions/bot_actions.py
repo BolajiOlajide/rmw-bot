@@ -124,10 +124,8 @@ Details for Ride ID: _{_id}_:
                 return {
                     "text": ">Sorry, You can't be a driver and a rider at the same time. Calm down! :chop-slap: "
                 }
-            elif (seats_left < 1 or rider_count == ride.max_seats):
-                return {
-                    "text": "Sorry, This ride is full. Kindly join another ride."
-                }
+            elif seats_left < 1 or rider_count == ride.max_seats:
+                return {"text": "Sorry, This ride is full. Kindly join another ride."}
             elif self.ride_rider_repo.is_rider_already_joined(
                 ride_id=ride.id, rider_id=self.current_user.id
             ):
@@ -141,8 +139,10 @@ Details for Ride ID: _{_id}_:
                 response_text = f""">>>Hey,
 <@{self.current_user.slack_uid}> just joined your ride. :celebrate:"""
                 slackhelper.post_message(response_text, ride.driver.slack_uid)
-                return {"text": f""">>>Hey <@{self.current_user.slack_uid}>,
-You've successfully joined ride {ride.id}."""}
+                return {
+                    "text": f""">>>Hey <@{self.current_user.slack_uid}>,
+You've successfully joined ride {ride.id}."""
+                }
 
     def show_rides(self):
         todays_date = datetime.now()
@@ -180,7 +180,9 @@ You've successfully joined ride {ride.id}."""}
         ride = self.ride_repo.find_by_id(_id)
 
         if self.current_user.id != ride.driver_id:
-            return {"text": ">Why do you want to cancel what you didn't create. Why you gotta do like that :eyes:"}
+            return {
+                "text": ">Why do you want to cancel what you didn't create. Why you gotta do like that :eyes:"
+            }
 
         if not ride:
             return {"text": "Ride Does Not Exist"}

@@ -36,7 +36,8 @@ def handle_bot_actions(
                 "elements": elements,
             }
             slackhelper.dialog(dialog, message_trigger)
-            response_body = {"text": ""}
+            msg = ":pencil: We are saving your ride..."
+            response_body = {"text": msg}
 
         elif action == "ride-info":
             response_body = bot_actions.get_ride_info(command_text[1])
