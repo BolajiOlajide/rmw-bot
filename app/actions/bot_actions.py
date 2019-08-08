@@ -100,7 +100,7 @@ Thanks for sharing {max_seats} spaces."""
             rider_count = self.ride_rider_repo.count_ride_riders(_id)
             seats_left = ride.max_seats - rider_count
             text = f"""
-Details for Ride _{_id}_:
+Details for Ride ID: _{_id}_:
 >>>*Driver Details:* _{driver_detail}_
 *Origin:* _{ride.origin}_
 *Destination:* _{ride.destination}_
@@ -122,31 +122,35 @@ Details for Ride _{_id}_:
         else:
             if ride.driver.id == self.current_user.id:
                 return {
-                    "text": "Sorry, You're can't be a driver and a rider at the same time"
+                    "text": ">Sorry, You can't be a driver and a rider at the same time. Calm down! :chop-slap: "
                 }
-            elif (
-                seats_left < 1
-                or rider_count == ride.max_seats
-                or self.ride_rider_repo.is_rider_already_joined(
-                    ride_id=ride.id, rider_id=self.current_user.id
-                )
+            elif (seats_left < 1 or rider_count == ride.max_seats):
+                return {
+                    "text": "Sorry, This ride is full. Kindly join another ride."
+                }
+            elif self.ride_rider_repo.is_rider_already_joined(
+                ride_id=ride.id, rider_id=self.current_user.id
             ):
                 return {
-                    "text": "Sorry, You're Already Booked or This Ride Is Fully Booked"
+                    "text": "Sorry, You're already booked for this ride. Don't stress me plix!"
                 }
             else:
                 self.ride_rider_repo.new_ride_rider(
                     ride_id=ride.id, rider_id=self.current_user.id
                 )
-                return {"text": "Successfully Joined Ride"}
+                response_text = f""">>>Hey,
+<@{self.current_user.slack_uid}> just joined your ride. :celebrate:"""
+                slackhelper.post_message(response_text, ride.driver.slack_uid)
+                return {"text": f""">>>Hey <@{self.current_user.slack_uid}>,
+You've successfully joined ride {ride.id}."""}
 
     def show_rides(self):
         todays_date = datetime.now()
         start = datetime(todays_date.year, todays_date.month, todays_date.day, 0, 0)
         end = datetime(todays_date.year, todays_date.month, todays_date.day, 23, 59)
-        rides = RideRepo.get_todays_rides(start=start, end=end)
+        rides = RideRepo.get_todays_rides(start=start, end=end, status=1)
 
-        text = ""
+        text = "\n"
 
         if len(rides) > 0:
             for ride in rides:
@@ -160,14 +164,12 @@ Details for Ride _{_id}_:
                     fallback=ride.take_off,
                 )
                 ride_status = check_ride_status(ride)
-                text += f"""```Ride Id: {ride.id}
-Driver name: {ride.driver.full_name} <@{ride.driver.slack_uid}>
-Driver number: {ride.driver.phone_number}
-Space available: {seats_left}
-Pick up point: {ride.origin}
-Destination: {ride.destination}
-Take off: {take_off_time}
-Status: {ride_status}```
+                text += f""">*Ride Id*: {ride.id}
+>_Driver name:_ <@{ride.driver.slack_uid}>
+>_Pick up point:_ *{ride.origin}*
+>_Destination:_ *{ride.destination}*
+>_Status:_ *{ride_status}*
+
 """
         else:
             text = ":disappointed: No rides available for now, please check back later in the day"
@@ -178,7 +180,7 @@ Status: {ride_status}```
         ride = self.ride_repo.find_by_id(_id)
 
         if self.current_user.id != ride.driver_id:
-            return {"text": "You are not authorized to cancel this ride"}
+            return {"text": ">Why do you want to cancel what you didn't create. Why you gotta do like that :eyes:"}
 
         if not ride:
             return {"text": "Ride Does Not Exist"}
@@ -212,8 +214,6 @@ Kindly opt-in for another ride.
         return {"text": response_text}
 
     def leave_ride(self, ride_id):
-        ride = self.ride_repo.find_by_id(ride_id)
-
         ride_rider = self.ride_rider_repo.find_ride_rider(ride_id, self.current_user.id)
         text = (
             "🤨 You can't leave this ride as you are not an active rider on this ride."
@@ -225,16 +225,15 @@ Kindly opt-in for another ride.
         ride_rider.isActive = False
         ride_rider.save()
 
-        response_text = f"""Hello,
+        response_text = f""">>>Hello,
 <@{self.current_user.slack_uid}> has opted out of your ride thus opening up a space
 for one more person.
 """
-
-        ride = self.ride_repo.find_by_id(ride_id)
+        driver_slack_id = ride_rider.ride.driver.slack_uid
 
         # notify driver
-        slackhelper.post_message(response_text, ride.driver.slack_uid)
+        slackhelper.post_message(response_text, driver_slack_id)
 
         return {
-            "text": f"You've successful opted out of ride {ride_id} with <@{ride.driver.slack_uid}>"
+            "text": f"You've successful opted out of ride {ride_id} with <@{driver_slack_id}>"
         }

@@ -37,5 +37,7 @@ class RideRepo:
         return ride
 
     @staticmethod
-    def get_todays_rides(start=None, end=None):
-        return Ride.query.filter(Ride.take_off <= end, Ride.take_off >= start).all()
+    def get_todays_rides(start=None, end=None, status=1):
+        return Ride.query.filter(
+            Ride.take_off <= end, Ride.take_off >= start, Ride.status == status
+        ).all()

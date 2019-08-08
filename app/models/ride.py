@@ -19,7 +19,6 @@ class Ride(Base, db.Model):
         self.destination = destination
         self.take_off = take_off
         self.max_seats = max_seats
-
         self.status = status
 
     def __repr__(self):
